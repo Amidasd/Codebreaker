@@ -1,0 +1,30 @@
+--- !ruby/object:Statistics
+users:
+- !ruby/object:User
+  name: dima
+  difficulty: easy
+  total_count_attempt: 15
+  count_attempt: 7
+  total_count_hints: 2
+  count_hint: 0
+- !ruby/object:User
+  name: dima
+  difficulty: easy
+  total_count_attempt: 15
+  count_attempt: 8
+  total_count_hints: 2
+  count_hint: 2
+- !ruby/object:User
+  name: dima
+  difficulty: easy
+  total_count_attempt: 15
+  count_attempt: 11
+  total_count_hints: 2
+  count_hint: 2
+- !ruby/object:User
+  name: dime
+  difficulty: easy
+  total_count_attempt: 15
+  count_attempt: 13
+  total_count_hints: 2
+  count_hint: 2
