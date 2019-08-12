@@ -1,6 +1,6 @@
 module Output
-  def output_stats_table
-    db = DbUtility.load_yaml_db
+  def output_stats_table(path)
+    db = GemCodebreakerAmidasd::DbUtility.load_yaml_db(path)
     rows = []
     db.users.map do |value|
       rows << [value.name, value.difficulty, value.total_count_attempt, value.count_attempt,
@@ -65,5 +65,13 @@ module Output
 
   def output_scenarios
     puts I18n.t(:step_scenarios)
+  end
+
+  def output_difficalty
+    puts I18n.t(:choose_difficulty)
+  end
+
+  def output_variant_difficalty(key)
+    puts "\n-" << I18n.t(key)
   end
 end

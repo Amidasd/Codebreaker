@@ -36,10 +36,8 @@ en:
   hell                : "hell"
 
 
-  choose_difficulty   : "Please select a difficulty level:
-                        \n-Easy
-                        \n-Medium
-                        \n-Hell"
+  choose_difficulty   : "Please select a difficulty level:"
+
 
 
   unexpected_command  : "You have passed unexpected command. Please choose one from listed commands"

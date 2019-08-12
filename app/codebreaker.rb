@@ -1,45 +1,47 @@
 class Codebreaker
+  class << self
+
   include Validation
   include Output
 
-  attr_reader :name, :difficulty, :step, :game
+  PATH_DB = './db/codebreaker_db.yml'
 
-  def initialize
+  COMMANDS = {
+      welcome: proc { welcome },
+      start: proc { start },
+      exit: proc { close },
+      scenarios: proc { scenarios },
+      rules: proc { rules },
+      stats: proc { stats },
+      game: proc { step_game },
+      finish: proc {finish},
+      save: proc { save }
+    }
+
+  AVAILABLE_COMMANDS = [:start, :stats, :rules, :exit ].freeze
+
+  attr_reader :step, :game, :user
+
+  def run
     @step = :welcome
-  end
-
-  def start
     loop do
-      case @step
-      when :exit then break step_close
-      when :welcome then step_welcome
-      when :scenarios then step_scenarios
-      when :rules then step_rules
-      when :stats then step_stats
-      else start_two
+      if COMMANDS.key?(@step)
+        COMMANDS[@step].call
+      else
+        step_else
       end
-    end
-  end
-
-  def start_two
-    case @step
-    when :start then step_start
-    when :game then step_game
-    when :finish then step_finish
-    when :save then step_save
-    else step_else
     end
   end
 
   private
 
-  def step_close
+  def close
     output_exit
     exit
   end
 
-  def step_finish
-    output_step_finish(@game.secret_code.join(''))
+  def finish
+    output_step_finish(@game.string_secertcode)
     if @game.win
       output_won
       @step = :save
@@ -50,7 +52,7 @@ class Codebreaker
     end
   end
 
-  def step_save
+  def save
     output_save
     cache_save = check_exit
     case cache_save
@@ -61,24 +63,17 @@ class Codebreaker
   end
 
   def save_game
-    user = User.new(name: @name, difficulty: @difficulty, total_count_attempt: @game.total_count_attempt,
-             count_attempt: @game.count_attempt, total_count_hints: @game.total_count_hints,
-             count_hint: @game.array_hints.size)
-    DbUtility.add_db(user)
+    @user.set_params(difficulty: @game.difficulty, total_count_attempt: @game.total_count_attempt,
+                              count_attempt: @game.count_attempt, total_count_hints: @game.total_count_hints,
+                              count_hint: @game.array_hints.size)
+    GemCodebreakerAmidasd::DbUtility.add_db(@user, PATH_DB)
     empty_game
     @step = :scenarios
   end
 
-  # def create_user
-  #   User.new(name: @name, difficulty: @difficulty, total_count_attempt: @game.total_count_attempt,
-  #                   count_attempt: @game.count_attempt, total_count_hints: @game.total_count_hints,
-  #                   count_hint: @game.array_hints.size)
-  # end
-
   def empty_game
     @game = nil
-    @name = nil
-    @difficulty = nil
+    @user = nil
   end
 
   def step_else
@@ -91,7 +86,6 @@ class Codebreaker
     cache_game = check_exit
     return if @step == :exit
 
-    new_game
     if cache_game == 'hint'
       @game.gets_hint
       output_hint(@game)
@@ -102,48 +96,38 @@ class Codebreaker
     end
   end
 
-  def new_game
-    if @game.nil?
-      @game = GemCodebreakerAmidasd::GemCodebreaker.new(CodebreakerConfig::DIFFICULTY_HASH[@difficulty][:total_count_attempt],
-                            CodebreakerConfig::DIFFICULTY_HASH[@difficulty][:total_count_hints])
-    end
-  end
-
-  def step_welcome
+  def welcome
     output_welcome
     @step = :scenarios
   end
 
-  def step_stats
-    output_stats_table
+  def stats
+    output_stats_table(PATH_DB)
     @step = :scenarios
   end
 
-  def step_rules
+  def rules
     output_rules
     @step = :scenarios
   end
 
-  def step_scenarios
+  def scenarios
     output_scenarios
     comamand = gets.chomp.downcase
-    @step = CodebreakerConfig::AVAILABLE_COMMANDS[comamand]
+    @step = AVAILABLE_COMMANDS[comamand.to_sym]
   end
 
-  def step_start
-    if @name.nil?
-      enter_name
-      return
-    else
-      enter_difficulty
-    end
-    @step = :game if !@name.nil? && !@difficulty.nil?
+  def start
+    return enter_name if @user.nil? || @user.name.nil?
+    @game ||= GemCodebreakerAmidasd::GemCodebreaker.new()
+    enter_difficulty
+    @step = :game if @user.name && !@game.difficulty.nil?
   end
 
   def enter_name
     puts I18n.t(:enter_name)
     cache_name = check_exit(false)
-    @name = cache_name if validtion_name(cache_name)
+    @user = GemCodebreakerAmidasd::User.new(name: cache_name) if GemCodebreakerAmidasd::User.validtion_name(cache_name)
   end
 
   def check_exit(downcase = true)
@@ -154,8 +138,21 @@ class Codebreaker
   end
 
   def enter_difficulty
-    puts I18n.t(:choose_difficulty)
+    output_difficalty
+    @game.difficulty_hash.map do |key,|
+      output_variant_difficalty(key)
+    end
     cache_difficulty = check_exit
-    @difficulty = cache_difficulty if validtion_difficulty(cache_difficulty)
+    @game.set_difficulty(cache_difficulty) if validtion_difficulty(cache_difficulty)
   end
-end
+
+  def validtion_difficulty(difficulty)
+    local_difficulty = {}
+    @game.difficulty_hash.map{|key,|
+      local_difficulty[Iu18n.t(key)] = key
+    }
+    local_difficulty[difficulty] if local_difficulty.has_key? difficulty
+  end
+
+  end
+  end
