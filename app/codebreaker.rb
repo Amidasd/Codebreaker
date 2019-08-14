@@ -1,39 +1,36 @@
 class Codebreaker
-  class << self
-
-  include Validation
   include Output
 
-  PATH_DB = './db/codebreaker_db.yml'
+  PATH_DB = './db/codebreaker_db.yml'.freeze
 
   COMMANDS = {
-      welcome: proc { welcome },
-      start: proc { start },
-      exit: proc { close },
-      scenarios: proc { scenarios },
-      rules: proc { rules },
-      stats: proc { stats },
-      game: proc { step_game },
-      finish: proc {finish},
-      save: proc { save }
-    }
+    welcome: :welcome,
+    start: :start,
+    exit: :close,
+    scenarios: :scenarios,
+    rules: :rules,
+    stats: :stats,
+    game: :step_game,
+    finish: :finish,
+    save: :save
+  }.freeze
 
-  AVAILABLE_COMMANDS = [:start, :stats, :rules, :exit ].freeze
+  AVAILABLE_COMMANDS = %i[start stats rules exit].freeze
 
   attr_reader :step, :game, :user
 
-  def run
+  def initialize
     @step = :welcome
+  end
+
+  def run
     loop do
-      if COMMANDS.key?(@step)
-        COMMANDS[@step].call
-      else
-        step_else
-      end
+      next send(COMMANDS[@step]) if COMMANDS.key?(@step)
+      step_else
     end
   end
 
-  private
+    private
 
   def close
     output_exit
@@ -41,7 +38,7 @@ class Codebreaker
   end
 
   def finish
-    output_step_finish(@game.string_secertcode)
+    output_step_finish(@game.string_secretcode)
     if @game.win
       output_won
       @step = :save
@@ -64,8 +61,8 @@ class Codebreaker
 
   def save_game
     @user.set_params(difficulty: @game.difficulty, total_count_attempt: @game.total_count_attempt,
-                              count_attempt: @game.count_attempt, total_count_hints: @game.total_count_hints,
-                              count_hint: @game.array_hints.size)
+                     count_attempt: @game.count_attempt, total_count_hints: @game.total_count_hints,
+                     count_hint: @game.array_hints.size)
     GemCodebreakerAmidasd::DbUtility.add_db(@user, PATH_DB)
     empty_game
     @step = :scenarios
@@ -86,13 +83,13 @@ class Codebreaker
     cache_game = check_exit
     return if @step == :exit
 
-    if cache_game == 'hint'
+    if cache_game == I18n.t(:hint)
       @game.gets_hint
       output_hint(@game)
     else
       @game.guess_code(cache_game)
       result = output_guess_code(@game)
-      @step = :finish if result == 'finish'
+      @step = :finish if result == :finish
     end
   end
 
@@ -114,25 +111,28 @@ class Codebreaker
   def scenarios
     output_scenarios
     comamand = gets.chomp.downcase
-    @step = AVAILABLE_COMMANDS[comamand.to_sym]
+    return @step = comamand.to_sym if AVAILABLE_COMMANDS.include?(comamand.to_sym)
+
+    @step = :else
   end
 
   def start
-    return enter_name if @user.nil? || @user.name.nil?
-    @game ||= GemCodebreakerAmidasd::GemCodebreaker.new()
+    return enter_name if !@user || !@user.name
+
+    @game ||= GemCodebreakerAmidasd::GemCodebreaker.new
     enter_difficulty
-    @step = :game if @user.name && !@game.difficulty.nil?
+    @step = :game if @user.name && @game.difficulty
   end
 
   def enter_name
-    puts I18n.t(:enter_name)
+    output_name
     cache_name = check_exit(false)
     @user = GemCodebreakerAmidasd::User.new(name: cache_name) if GemCodebreakerAmidasd::User.validtion_name(cache_name)
   end
 
   def check_exit(downcase = true)
     cache_name = gets.chomp
-    @step = :exit if cache_name.downcase == 'exit'
+    @step = :exit if cache_name.downcase == I18n.t(:exit)
     return cache_name.downcase if downcase
     return cache_name unless downcase
   end
@@ -143,16 +143,12 @@ class Codebreaker
       output_variant_difficalty(key)
     end
     cache_difficulty = check_exit
-    @game.set_difficulty(cache_difficulty) if validtion_difficulty(cache_difficulty)
+    @game.set_difficulty(cache_difficulty.to_sym) if validtion_difficulty(cache_difficulty)
   end
 
   def validtion_difficulty(difficulty)
     local_difficulty = {}
-    @game.difficulty_hash.map{|key,|
-      local_difficulty[Iu18n.t(key)] = key
-    }
-    local_difficulty[difficulty] if local_difficulty.has_key? difficulty
-  end
-
-  end
+    @game.difficulty_hash.map { |key,| local_difficulty[I18n.t(key)] = key }
+    local_difficulty[difficulty] if local_difficulty.key? difficulty
+    end
   end

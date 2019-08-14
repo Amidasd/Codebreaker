@@ -5,11 +5,8 @@ describe Codebreaker do
   let(:codebreaker) { Codebreaker.new }
 
   specify 'Codebreaker attributes' do
-    expect(codebreaker).to respond_to(:name)
-    expect(codebreaker).not_to respond_to(:name=)
-
-    expect(codebreaker).to respond_to(:difficulty)
-    expect(codebreaker).not_to respond_to(:difficulty=)
+    expect(codebreaker).to respond_to(:user)
+    expect(codebreaker).not_to respond_to(:user=)
 
     expect(codebreaker).to respond_to(:step)
     expect(codebreaker).not_to respond_to(:step=)
@@ -26,7 +23,7 @@ describe Codebreaker do
     end
 
     after do
-      codebreaker.start
+      codebreaker.run
     end
 
     it 'console to receive welcome' do
@@ -34,12 +31,12 @@ describe Codebreaker do
     end
 
     it 'console to receive start' do
-      expect(codebreaker).to receive(:start)
+      expect(codebreaker).to receive(:run)
     end
 
     describe 'step_welcome' do
       it 'console to receive step_welcome' do
-        expect(codebreaker).to receive(:step_welcome)
+        expect(codebreaker).to receive(:welcome)
       end
 
       it 'console to receive step_welcome' do
@@ -54,6 +51,14 @@ describe Codebreaker do
     describe 'step_scenarios' do
       before do
         codebreaker.instance_variable_set(:@step, :scenarios)
+      end
+
+      it 'step_scenarios to receive output_scenarios' do
+        expect(codebreaker).to receive(:send)
+      end
+
+      it 'step_scenarios to receive output_scenarios' do
+        expect(codebreaker).to receive(:scenarios)
       end
 
       it 'step_scenarios to receive output_scenarios' do
@@ -87,7 +92,7 @@ describe Codebreaker do
       end
 
       it 'console to receive step_stats' do
-        expect(codebreaker).to receive(:step_stats)
+        expect(codebreaker).to receive(:stats)
       end
 
       it 'step_stats to receive output_stats_table' do
@@ -105,7 +110,7 @@ describe Codebreaker do
       end
 
       it 'console to receive step_rules' do
-        expect(codebreaker).to receive(:step_rules)
+        expect(codebreaker).to receive(:rules)
       end
 
       it 'step_rules to receive output_rules' do
@@ -122,23 +127,19 @@ describe Codebreaker do
         codebreaker.instance_variable_set(:@step, :start)
       end
 
-      it 'console to receive start_two' do
-        expect(codebreaker).to receive(:start_two)
-      end
-
       it 'console to receive step_start' do
-        expect(codebreaker).to receive(:step_start)
+        expect(codebreaker).to receive(:start)
       end
 
       it 'step_start to receive enter_name' do
         expect(codebreaker).to receive(:enter_name)
       end
 
-      it 'enter_name to receive validtion_name' do
-        name = 'Amidasd'
-        allow(codebreaker).to receive(:gets).and_return(name)
-        expect(codebreaker).to receive(:validtion_name).with(name)
-      end
+      # it 'enter_name to receive validtion_name' do
+      #   name = 'Amidasd'
+      #   allow(codebreaker).to receive(:gets).and_return(name)
+      #   expect(codebreaker).to receive(:validtion_name).with(name)
+      # end
 
       it 'enter_name to receive validtion_name' do
         name = 'Amidasd'
@@ -152,8 +153,9 @@ describe Codebreaker do
       # end
 
       context 'with name' do
+        let(:user) { GemCodebreakerAmidasd::User.new(name: 'Amidasd') }
         after do
-          codebreaker.instance_variable_set(:@name, 'Amidasd')
+          codebreaker.instance_variable_set(:@user, user)
         end
 
         it 'step_start to receive enter_difficulty' do
@@ -171,22 +173,15 @@ describe Codebreaker do
     end
 
     describe 'step_game' do
-      let(:new_game) { GemCodebreakerAmidasd::GemCodebreaker.new(15, 2) }
+      let(:new_game) { GemCodebreakerAmidasd::GemCodebreaker.new }
       before do
+        new_game.set_difficulty(:easy)
         codebreaker.instance_variable_set(:@step, :game)
-         codebreaker.instance_variable_set(:@game, new_game)
+        codebreaker.instance_variable_set(:@game, new_game)
       end
 
       it 'step_game to receive output_start_game ' do
         expect(codebreaker).to receive(:output_start_game)
-      end
-
-      it 'step_game to receive new_game' do
-        expect(codebreaker).to receive(:new_game)
-      end
-
-      it 'step_game to receive new_game' do
-        expect(codebreaker).to receive(:new_game)
       end
 
       context 'hint' do
@@ -199,13 +194,11 @@ describe Codebreaker do
         end
 
         it 'step_game to receive output_hint ' do
-          expect(codebreaker).to receive(:output_hint)
+          expect(codebreaker).to receive(:output_hint).with(new_game)
         end
       end
 
       context 'guess_code' do
-
-
         it 'step_game to receive guess_code' do
           code = '1111'
           allow(codebreaker).to receive(:gets).and_return(code)
@@ -224,9 +217,10 @@ describe Codebreaker do
     end
 
     describe 'step_finish' do
-      let(:new_game) { GemCodebreakerAmidasd::GemCodebreaker.new(15, 2) }
+      let(:new_game) { GemCodebreakerAmidasd::GemCodebreaker.new }
 
       before do
+        new_game.set_difficulty(:easy)
         codebreaker.instance_variable_set(:@step, :finish)
         codebreaker.instance_variable_set(:@game, new_game)
       end
@@ -262,18 +256,15 @@ describe Codebreaker do
     end
 
     describe 'step_save' do
-      let(:new_game) { GemCodebreakerAmidasd::GemCodebreaker.new(15, 2) }
+      let(:new_game) { GemCodebreakerAmidasd::GemCodebreaker.new }
 
-      let(:user) do
-        User.new(name: 'Test',
-                 difficulty: 'easy',
-                 total_count_attempt: 15,
-                 count_attempt: 2,
-                 total_count_hints: 2,
-                 count_hint: 0)
-      end
+      # let(:user) { GemCodebreakerAmidasd::User.new(name: "Amidasd") }
 
       before do
+        new_game.set_difficulty(:easy)
+        # user.set_params(difficulty: new_game.difficulty, total_count_attempt: new_game.total_count_attempt,
+        #                 count_attempt: new_game.count_attempt, total_count_hints: new_game.total_count_hints,
+        #                 count_hint: new_game.array_hints.size)
         codebreaker.instance_variable_set(:@step, :save)
         codebreaker.instance_variable_set(:@game, new_game)
       end
@@ -291,19 +282,12 @@ describe Codebreaker do
         expect(codebreaker).to receive(:save_game)
       end
 
-      # it 'step_save to receive yes ' do
+      # it 'step_save to receive scenarios ' do
       #   allow(codebreaker).to receive(:gets).and_return(I18n.t('Game.y'))
-      #   # game2 = GemCodebreakerAmidasd::GemCodebreaker.new(15, 2)
-      #   # codebreaker.instance_variable_set(:@game, game2)
-      #   # puts new_game.class
-      #   expect(codebreaker).to receive(User.new)
+      #   # DbUtility.add_db(user)
+      #   # GemCodebreakerAmidasd::DbUtility.add_db(user, PATH_DB)
+      #   expect(codebreaker.instance_variable_get(:@step)).equal?(:scenarios)
       # end
-
-      it 'step_save to receive scenarios ' do
-        allow(codebreaker).to receive(:gets).and_return(I18n.t('Game.y'))
-        DbUtility.add_db(user)
-        expect(codebreaker.instance_variable_get(:@step)).equal?(:scenarios)
-      end
 
       it 'step_save to receive no ' do
         allow(codebreaker).to receive(:gets).and_return(I18n.t('Game.n'))
@@ -336,46 +320,19 @@ describe Codebreaker do
       end
     end
 
-    describe 'step_close' do
+    describe 'close' do
       before do
         codebreaker.instance_variable_set(:@step, :exit)
       end
 
-      # it 'console to receive step_else' do
-      #   expect(codebreaker).to receive(:step_close)
-      # end
-
       it 'step_close to receive step_close' do
-        expect(codebreaker).to receive(:step_close)
+        expect(codebreaker).to receive(:close)
       end
 
       it 'step_close to receive step_close' do
         expect(codebreaker).to receive(:output_exit)
         expect(codebreaker).to receive(:exit)
       end
-
-      # it 'step_close to receive step_close' do
-      #   expect{codebreaker.step_close}.to raise_error(SystemExit)
-      # end
-      # it 'step_close to receive output_exit' do
-      #   # expect(codebreaker).to receive(:step_close)
-      #   expect(codebreaker).to receive(:output_exit)
-      #   # expect {codebreaker}.to raise_error(SystemExit)
-      # end
     end
-    # it 'step_save to receive save_game ' do
-     # Codebreaker.send(:public, *Codebreaker.save_game)
-    # expect(codebreaker.instance_eval{ save_game }).to receive(:empty_game)
-
-    # expect(codebreaker).to receive(:empty_game)
-    # codebreaker.save_game
-    # assigns(:save_game).should == codebreaker
-    # expect{codebreaker.save_game}.not_to raise_error
-    # assert_equal expected,
-    #              Codebreaker.instance.save_game
-    # codebreaker.instance_eval{save_game}.to receive(:empty_game)
-    # expect(:save_game).to receive(:empty_game)
-    # expect(codebreaker.instance_variable_get(:@step)).equal?(:scenarios)
-    # end
   end
 end

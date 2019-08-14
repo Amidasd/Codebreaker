@@ -1,6 +1,4 @@
 require './dependency'
 
-# game = Codebreaker.new
-# game.run
-
-Codebreaker.run
+game = Codebreaker.new
+game.run

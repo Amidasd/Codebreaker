@@ -35,12 +35,19 @@ en:
   medium              : "medium"
   hell                : "hell"
 
-
+  hint                : "hint"
+  exit                : "exit"
   choose_difficulty   : "Please select a difficulty level:"
 
-
-
   unexpected_command  : "You have passed unexpected command. Please choose one from listed commands"
+
+  name                : "Name"
+  difficulty          : "Difficulty"
+  total_count_attempt : "Total count attempt"
+  count_attempt       : "Count attempt"
+  total_count_hints   : "Total count hints"
+  count_hint          : "Count hint"
+
 
   Game:
     start_game        : "-Please enter your guess of secret code
@@ -57,8 +64,5 @@ en:
     new_game          : "\n\nDo you want to start a new game?(y/n)"
     y                 : "y"
     n                 : "n"
-  validation:
-    not_string        : "Value is not a String"
-    empty_string      : "Value is empty"
-    incorrect_length  : "Value is incorrect length"
+
 

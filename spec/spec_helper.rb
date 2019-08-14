@@ -1,30 +1,3 @@
-# frozen_string_literal: true
-
-#
-# require_relative '../dependency'
-# require 'simplecov'
-# require 'pry'
-# require 'yaml'
-# SimpleCov.start do
-#   add_filter '/spec/'
-#   minimum_coverage 95
-# end
-#
-#
-#
-# RSpec.configure do |config|
-#   config.expect_with :rspec do |expectations|
-#     expectations.include_chain_clauses_in_custom_matcher_descriptions = true
-#     expectations.syntax = :expect
-#   end
-#
-#   config.mock_with :rspec do |mocks|
-#     mocks.verify_partial_doubles = true
-#   end
-#
-#   config.disable_monkey_patching!
-# end
-
 require 'simplecov'
 require 'pry'
 require 'yaml'
