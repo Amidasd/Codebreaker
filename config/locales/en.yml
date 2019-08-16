@@ -1,0 +1,66 @@
+en:
+  symbol_plus         : "+"
+  symbol_minus        : "-"
+  step_welcome        : "Hi This is the implementation of the game Codebreaker from Amidasd"
+  step_scenarios      : "-Star
+                        \n-Rules
+                        \n-Stats
+                         \n-Exit"
+  step_exit           : "Goodbye!"
+  step_finish         : "Secret code: "
+  step_rules          : "GAME RULES
+                        \n # Codebreaker is a logic game in which a code-breaker tries to break a secret code created by a code-maker. The
+                        \n codemaker, which will be played by the application we’re going to write, creates a secret code of four numbers between
+                        \n 1 and 6.
+                        \n # The codebreaker gets some number of chances to break the code (depends on chosen difficulty). In each turn, the
+                        \n codebreaker makes a guess of 4 numbers. The codemaker then marks the guess with up to 4 signs - + or - or empty
+                        \n spaces.
+                        \n # A + indicates an exact match: one of the numbers in the guess is the same as one of the numbers in the secret code
+                        \n and in the same position. For example:
+                        \n Secret number - 1234
+                        \n Input number - 6264
+                        \n Number of pluses - 2 (second and fourth position
+                        \n # A - indicates a number match: one of the numbers in the guess is the same as one of the numbers in the secret code
+                        \n but in a different position. For example:
+                        \n Secret number - 1234
+                        \n Input number - 6462
+                        \n Number of minuses - 2 (second and fourth position)
+                        \n # An empty space indicates that there is not a current digit in a secret number.
+                        \n # If codebreaker inputs the exact number as a secret number - codebreaker wins the game. If all attempts are spent -
+                        \n codebreaker loses.
+                        \n # Codebreaker also has some number of hints(depends on chosen difficulty). If a user takes a hint - he receives back a
+                        \n separate digit of the secret code.\n"
+  enter_name          : "Please enter your name"
+  easy                : "easy"
+  medium              : "medium"
+  hell                : "hell"
+
+  hint                : "hint"
+  exit                : "exit"
+  choose_difficulty   : "Please select a difficulty level:"
+
+  unexpected_command  : "You have passed unexpected command. Please choose one from listed commands"
+
+  name                : "Name"
+  difficulty          : "Difficulty"
+  total_count_attempt : "Total count attempt"
+  count_attempt       : "Count attempt"
+  total_count_hints   : "Total count hints"
+  count_hint          : "Count hint"
+
+
+  Game:
+    start_game        : "-Please enter your guess of secret code
+                        \n-Hint
+                        \n-Exit"
+    HintsEnd          : "Hints end"
+    NoCluesAvailable  : "No clues available"
+    WrongCode         : "Wrong code"
+
+    Won               : "You won!"
+    Lose              : "You lose!"
+
+    save_result       : "\n\nAre you want to save your result? (y/n)"
+    new_game          : "\n\nDo you want to start a new game?(y/n)"
+    y                 : "y"
+    n                 : "n"
