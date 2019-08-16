@@ -163,7 +163,7 @@ describe Codebreaker do
         end
 
         it 'enter_difficulty to receive validtion_difficulty' do
-          expect(codebreaker).to receive(:validtion_difficulty)
+          expect(codebreaker).to receive(:valid_difficulty?)
         end
 
         it 'step_start to receive game' do
@@ -173,9 +173,9 @@ describe Codebreaker do
     end
 
     describe 'step_game' do
-      let(:new_game) { GemCodebreakerAmidasd::GemCodebreaker.new }
+      let(:new_game) { GemCodebreakerAmidasd::Game.new }
       before do
-        new_game.set_difficulty(:easy)
+        new_game.setDifficulty(:easy)
         codebreaker.instance_variable_set(:@step, :game)
         codebreaker.instance_variable_set(:@game, new_game)
       end
@@ -199,15 +199,22 @@ describe Codebreaker do
       end
 
       context 'guess_code' do
-        it 'step_game to receive guess_code' do
+        it 'step_game to receive show_result_code' do
           code = '1111'
           allow(codebreaker).to receive(:gets).and_return(code)
-          expect(new_game).to receive(:guess_code).with(code)
+          expect(codebreaker).to receive(:show_result_code).with(code)
         end
 
-        it 'step_game to receive output_guess_code' do
-          new_game.instance_variable_set(:@win, true)
-          expect(codebreaker).to receive(:output_guess_code).with(new_game)
+        it 'step_game to receive guess_code' do
+          code = '1111'
+          # allow(codebreaker).to receive(:gets).and_return(code)
+          # expect(new_game).to receive(:guess_code).with(code)
+         # expect(codebreaker).to receive(:output_guess_code_error).with(new_game)
+        end
+
+        it 'step_game to receive output_result_guess_code' do
+          new_game.instance_variable_set(:@status, GemCodebreakerAmidasd::STATUS[:process_game])
+          expect(codebreaker).to receive(:output_result_guess_code).with(new_game)
         end
 
         it 'step_game to receive finish' do
@@ -217,10 +224,10 @@ describe Codebreaker do
     end
 
     describe 'step_finish' do
-      let(:new_game) { GemCodebreakerAmidasd::GemCodebreaker.new }
+      let(:new_game) { GemCodebreakerAmidasd::Game.new }
 
       before do
-        new_game.set_difficulty(:easy)
+        new_game.setDifficulty(:easy)
         codebreaker.instance_variable_set(:@step, :finish)
         codebreaker.instance_variable_set(:@game, new_game)
       end
@@ -230,7 +237,7 @@ describe Codebreaker do
       end
 
       it 'step_finish to receive output_won' do
-        new_game.instance_variable_set(:@win, true)
+        new_game.instance_variable_set(:@status, GemCodebreakerAmidasd::STATUS[:win])
         expect(codebreaker).to receive(:output_won)
       end
 
@@ -256,12 +263,12 @@ describe Codebreaker do
     end
 
     describe 'step_save' do
-      let(:new_game) { GemCodebreakerAmidasd::GemCodebreaker.new }
+      let(:new_game) { GemCodebreakerAmidasd::Game.new }
 
       # let(:user) { GemCodebreakerAmidasd::User.new(name: "Amidasd") }
 
       before do
-        new_game.set_difficulty(:easy)
+        new_game.setDifficulty(:easy)
         # user.set_params(difficulty: new_game.difficulty, total_count_attempt: new_game.total_count_attempt,
         #                 count_attempt: new_game.count_attempt, total_count_hints: new_game.total_count_hints,
         #                 count_hint: new_game.array_hints.size)

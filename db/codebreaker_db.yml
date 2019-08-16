@@ -1,8 +1,0 @@
----
-- !ruby/object:GemCodebreakerAmidasd::User
-  name: dima
-  difficulty: :easy
-  total_count_attempt: 15
-  count_attempt: 7
-  total_count_hints: 2
-  count_hint: 2

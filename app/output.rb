@@ -1,10 +1,11 @@
 module Output
-  def output_stats_table(path)
-    db = GemCodebreakerAmidasd::DbUtility.load_yaml_db(path)
+  def output_stats_table
+    stats_array = GemCodebreakerAmidasd::DbUtility.load_yaml_db
+    GemCodebreakerAmidasd::Statistic.sort_array(stats_array)
     rows = []
-    db.map do |value|
-      rows << [value.name, value.difficulty, value.total_count_attempt, value.count_attempt,
-               value.total_count_hints, value.count_hint]
+    stats_array.map do |value|
+      rows << [value.user.name, value.game.difficulty, value.game.total_count_attempt, value.game.count_attempt,
+               value.game.total_count_hints, value.game.count_hints]
     end
     headings = [I18n.t(:name), I18n.t(:difficulty), I18n.t(:total_count_attempt), I18n.t(:count_attempt),
                 I18n.t(:total_count_hints), I18n.t(:count_hint)]
@@ -49,14 +50,12 @@ module Output
     puts I18n.t('Game.' + game.error.to_s) if game.error
   end
 
-  def output_guess_code(game)
+  def output_guess_code_error(game)
     puts I18n.t('Game.' + game.error.to_s) if game.error
-    puts gets_result_guess_code(game) if game.win.nil?
-    return :finish unless game.win.nil?
   end
 
-  def gets_result_guess_code(game)
-    I18n.t(:symbol_plus) * game.count_plus << I18n.t(:symbol_minus) * game.count_minus
+  def output_result_guess_code(game)
+    puts I18n.t(:symbol_plus) * game.count_plus << I18n.t(:symbol_minus) * game.count_minus
   end
 
   def output_rules

@@ -13,7 +13,7 @@ GEM
       colorize (~> 0.7)
       ruby_parser (>= 3.13.0)
     ffi (1.11.1)
-    gem_codebreaker_amidasd (0.1.5)
+    gem_codebreaker_amidasd (0.1.8)
     i18n (1.6.0)
       concurrent-ruby (~> 1.0)
     iniparse (1.4.4)
@@ -72,7 +72,7 @@ PLATFORMS
 
 DEPENDENCIES
   fasterer (~> 0.5.1)
-  gem_codebreaker_amidasd (~> 0.1.5)
+  gem_codebreaker_amidasd (~> 0.1.8)
   i18n (~> 1.6)
   overcommit (~> 0.48.0)
   pry (~> 0.12.2)
